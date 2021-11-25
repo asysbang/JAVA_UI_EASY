@@ -89,7 +89,7 @@ public class WLabel extends JLabel implements MouseMotionListener, MouseListener
 
 		System.out.println("=========pressedX:" + pressedX + " , right:" + right + " , pressedY:" + pressedY + " , top:"
 				+ top + " , bottom:" + bottom);
-		if (Math.abs(right - pressedX) <= 2) {
+		if (Math.abs(right - pressedX) <= 4) {
 			if (pressedY >= top && pressedY <= bottom) {
 				resizeNotMove = true;
 				System.out.println("=========resizeNotMove");
