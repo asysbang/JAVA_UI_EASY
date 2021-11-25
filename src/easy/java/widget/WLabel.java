@@ -1,33 +1,32 @@
 package easy.java.widget;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.border.LineBorder;
 
 import easy.java.ui.TargetPanel;
 
-public class WButton extends JButton implements MouseListener, MouseMotionListener {
+public class WLabel extends JLabel implements MouseMotionListener, MouseListener {
+	
 
 	private static final long serialVersionUID = 1L;
 
-	private int pressedX, pressedY;
-
-	private int curX, curY, curWidth, curHeight;
-
 	private TargetPanel mTargetPanel;
 
-	private ExtraInfo mExtraInfo;
-
+	private int curX, curY, curWidth, curHeight;
+	
+	private int pressedX, pressedY;
+	
 	private boolean resizeNotMove = false;// 标记是resize还是move
 
-	public WButton(String tag, TargetPanel targetPanel) {
+	public WLabel(String tag, TargetPanel targetPanel) {
 		super(tag);
-		mExtraInfo = new ExtraInfo();
 		mTargetPanel = targetPanel;
 		curX = 100;
 		curY = 10;
@@ -35,31 +34,47 @@ public class WButton extends JButton implements MouseListener, MouseMotionListen
 		curWidth = 90;
 		curHeight = 50;
 		setLocation(curX, curY);
-		addMouseListener(this);
+		setBorder(new LineBorder(Color.green));
 		addMouseMotionListener(this);
-		mExtraInfo.setClickMethod("on" + tag + "Clicked");
-	}
-
-	public void setClickMethod(String clickMethod) {
-		mExtraInfo.setClickMethod(clickMethod);
-	}
-
-	public String getClickMethod() {
-		return mExtraInfo.getClickMethod();
+		addMouseListener(this);
 	}
 
 	@Override
-	protected void fireActionPerformed(ActionEvent event) {
-		System.out.println("=========fireActionPerformed");
+	public void mouseDragged(MouseEvent e) {
+		// System.out.println("=========mouseDragged:" + e.getXOnScreen());
+				int x = e.getXOnScreen();
+				int y = e.getYOnScreen();
+				int detaX = x - pressedX;
+				int detaY = y - pressedY;
+				if (resizeNotMove) {
+					setSize(curWidth + detaX, curHeight + detaY);
+				} else {
+					if (curX + detaX <= 0) {
+						detaX = -curX;
+					}
+					if (curY + detaY <= 0) {
+						detaY = -curY;
+					}
+					// System.out.println("=======detaX:" + detaX);
+					setLocation(curX + detaX, curY + detaY);
+				}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("=========mouseClicked:");
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
 		System.out.println("=========mousePressed:" + e.getXOnScreen());
 		mTargetPanel.setFocusComponent(this);
 		pressedX = e.getXOnScreen();
@@ -86,6 +101,7 @@ public class WButton extends JButton implements MouseListener, MouseMotionListen
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
 		System.out.println("=========mouseReleased:[" + e.getXOnScreen() + "," + e.getYOnScreen() + "]");
 		if (resizeNotMove) {
 			curWidth = getWidth();
@@ -106,36 +122,14 @@ public class WButton extends JButton implements MouseListener, MouseMotionListen
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
-
+		// TODO Auto-generated method stub
+		
 	}
 
-	@Override
-	public void mouseDragged(MouseEvent e) {
-		// System.out.println("=========mouseDragged:" + e.getXOnScreen());
-		int x = e.getXOnScreen();
-		int y = e.getYOnScreen();
-		int detaX = x - pressedX;
-		int detaY = y - pressedY;
-		if (resizeNotMove) {
-			setSize(curWidth + detaX, curHeight + detaY);
-		} else {
-			if (curX + detaX <= 0) {
-				detaX = -curX;
-			}
-			if (curY + detaY <= 0) {
-				detaY = -curY;
-			}
-			// System.out.println("=======detaX:" + detaX);
-			setLocation(curX + detaX, curY + detaY);
-		}
-	}
-
-	@Override
-	public void mouseMoved(MouseEvent e) {
-	}
 }

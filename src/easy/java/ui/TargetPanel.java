@@ -12,9 +12,11 @@ import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import easy.java.widget.WButton;
+import easy.java.widget.WLabel;
 
 public class TargetPanel extends JPanel implements MouseMotionListener {
 
@@ -30,7 +32,7 @@ public class TargetPanel extends JPanel implements MouseMotionListener {
 		setBackground(Color.gray);
 	}
 
-	public void setFocusComponent(JButton btn) {
+	public void setFocusComponent(JComponent btn) {
 		if (mListener != null) {
 			mListener.onFocusComponentChanged(btn);
 		}
@@ -38,10 +40,6 @@ public class TargetPanel extends JPanel implements MouseMotionListener {
 
 	public void generateCode() {
 		Component[] components = getComponents();
-		System.out.println("====components:" + components.length);
-		for (Component com : components) {
-			System.out.println("=====" + com);
-		}
 		try {
 			File file = new File("EasyUI.java");
 			FileOutputStream fos = new FileOutputStream(file);
@@ -63,46 +61,65 @@ public class TargetPanel extends JPanel implements MouseMotionListener {
 			if (components.length > 0) {
 				bw.write("private JButton ");
 				for (int i = 0; i < components.length; i++) {
-					bw.write("mBtn" + i);
-					if (i == components.length - 1) {
-						bw.write(";\n");
-					} else {
-						bw.write(",");
+					if (components[i] instanceof JButton) {
+						bw.write("mBtn" + i);
+						if (i == components.length - 1) {
+							bw.write(";\n");
+						} else {
+							bw.write(",");
+						}
 					}
 				}
 			}
 
 			bw.write("private void initUI(){\n");
 			for (int i = 0; i < components.length; i++) {
-				JButton btn = (JButton) components[i];
-				bw.write("mBtn" + i + "= new JButton(\"" + btn.getText() + "\");\n");
-				Dimension size = btn.getSize();
-				bw.write("mBtn" + i + ".setSize(" + size.width + "," + size.height + ");\n");
-				Point location = btn.getLocation();
-				bw.write("mBtn" + i + ".setLocation(" + location.x + "," + location.y + ");\n");
-				bw.write("mBtn" + i + ".addActionListener(this);\n");
-				bw.write("add(mBtn" + i + ");\n");
-				bw.write("\n");
+				if (components[i] instanceof JButton) {
+					JButton btn = (JButton) components[i];
+					bw.write("mBtn" + i + "= new JButton(\"" + btn.getText() + "\");\n");
+					Dimension size = btn.getSize();
+					bw.write("mBtn" + i + ".setSize(" + size.width + "," + size.height + ");\n");
+					Point location = btn.getLocation();
+					bw.write("mBtn" + i + ".setLocation(" + location.x + "," + location.y + ");\n");
+					bw.write("mBtn" + i + ".addActionListener(this);\n");
+					bw.write("add(mBtn" + i + ");\n");
+					bw.write("\n");
+				}
 			}
 			bw.write("}\n");
 			bw.write("@Override\n");
 			bw.write("public void actionPerformed(ActionEvent e) {\n");
 			bw.write("Object source = e.getSource();\n");
+			boolean isFirst = true;
 			if (components.length > 0) {
 				for (int i = 0; i < components.length; i++) {
-					if (i > 0) {
-						bw.write("else ");
+					if (components[i] instanceof WButton) {
+						WButton btn = (WButton) components[i];
+						if (!isFirst) {
+							bw.write("else ");
+							isFirst= false;
+						}
+						bw.write("if(source == mBtn" + i + "){\n");
+						bw.write(btn.getClickMethod() + "();\n");
+						bw.write("}");
 					}
-					bw.write("if(source == mBtn" + i + "){");
-					bw.write("\n");
-					bw.write("}");
+					
 				}
 			}
-
 			bw.write("}\n");
+			if (components.length > 0) {
+				for (int i = 0; i < components.length; i++) {
+					if (components[i] instanceof WButton) {
+						WButton btn = (WButton) components[i];
+						bw.write("private void " + btn.getClickMethod() + "(){\n");
+						bw.write("System.out.println(\"======" + btn.getClickMethod() + "\");\n");
+						bw.write("}\n");
+					}
+					
+				}
+			}
 			bw.write("public static void main(String[] args) {\n");
 			bw.write("new EasyUI();\n");
-
 			bw.write("}\n");
 			bw.write("}\n");
 			bw.flush();
@@ -111,16 +128,24 @@ public class TargetPanel extends JPanel implements MouseMotionListener {
 			e.printStackTrace();
 		}
 	}
+	
+	public void addLabel() {
+		int count = getComponentCount();
+		WLabel wl = new WLabel("Label" + count, this);
+		add(wl);
+		this.updateUI();
+	}
 
 	public void addButton() {
-		WButton wb = new WButton("Button", this);
+		int count = getComponentCount();
+		WButton wb = new WButton("Button" + count, this);
 		add(wb);
 		this.updateUI();
 	}
 
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		System.out.println("========mouseDragged=" + e.getX());
+		//System.out.println("========mouseDragged=" + e.getX());
 	}
 
 	@Override

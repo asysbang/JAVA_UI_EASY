@@ -10,17 +10,11 @@ setLayout(null);
 initUI();
 setVisible(true);
 }
-JButton mBtn0,mBtn1;
+private JButton mBtn1;
 private void initUI(){
-mBtn0= new JButton("Button2");
-mBtn0.setSize(90,50);
-mBtn0.setLocation(97,274);
-mBtn0.addActionListener(this);
-add(mBtn0);
-
 mBtn1= new JButton("Button1");
 mBtn1.setSize(90,50);
-mBtn1.setLocation(243,274);
+mBtn1.setLocation(237,117);
 mBtn1.addActionListener(this);
 add(mBtn1);
 
@@ -28,9 +22,12 @@ add(mBtn1);
 @Override
 public void actionPerformed(ActionEvent e) {
 Object source = e.getSource();
-if(source == mBtn0){
-}else if(source == mBtn1){
+if(source == mBtn1){
+onButton1Clicked();
 }}
+private void onButton1Clicked(){
+System.out.println("======onButton1Clicked");
+}
 public static void main(String[] args) {
 new EasyUI();
 }
